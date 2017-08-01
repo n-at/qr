@@ -1,0 +1,90 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/bootstrap/3.3.7/css/bootstrap.min.css">
+    <style>
+        #qr img {
+            margin: 50px auto 0;
+        }
+    </style>
+
+    <title>QR Code Generator</title>
+</head>
+<body>
+
+<div class="container">
+    <div class="page-header">
+        <h1>QR Code Generator</h1>
+    </div>
+
+    <input type="text"
+           name="text"
+           class="form-control"
+           placeholder="Enter text here">
+
+    <div class="row">
+        <div class="col-xs-3">
+            <label>
+                <input type="radio" name="level" value="L"> Low
+            </label>
+        </div>
+        <div class="col-xs-3">
+            <label>
+                <input type="radio" name="level" value="M"> Medium
+            </label>
+        </div>
+        <div class="col-xs-3">
+            <label>
+                <input type="radio" name="level" value="Q"> Quartile
+            </label>
+        </div>
+        <div class="col-xs-3">
+            <label>
+                <input type="radio" name="level" value="H" checked="checked"> High
+            </label>
+        </div>
+    </div>
+
+    <div id="qr"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/gh/jquery/jquery@3.1.0/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+<script>
+
+    $(() => {
+        let qrCode = null;
+
+        function updateCode() {
+            $('#qr').empty();
+
+            let level = $('input[name="level"]:checked').val();
+            let levelValue;
+            switch (level) {
+                case 'L': levelValue = QRCode.CorrectLevel.L; break;
+                case 'M': levelValue = QRCode.CorrectLevel.M; break;
+                case 'Q': levelValue = QRCode.CorrectLevel.Q; break;
+                case 'H': levelValue = QRCode.CorrectLevel.H; break;
+                default:
+                    levelValue = QRCode.CorrectLevel.H;
+            }
+
+            qrCode = new QRCode(document.getElementById("qr"), {
+                text: $('input[name="text"]').val(),
+                width: 256,
+                height: 256,
+                colorDark : "#000000",
+                colorLight : "#ffffff",
+                correctLevel : levelValue,
+            });
+        }
+
+        $('input[name="text"]').keyup(updateCode);
+        $('input[name="level"]').change(updateCode);
+    });
+
+</script>
+</body>
+</html>
