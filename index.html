@@ -14,6 +14,9 @@
         }
     </style>
 
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.min.js"></script>
+
     <title>QR Code Generator</title>
 </head>
 <body>
@@ -24,86 +27,108 @@
         <hr>
     </div>
 
-    <div class="row">
-        <div class="col-6">
-            <div class="form-group">
-                <label for="text" class="sr-only">Test to encode</label>
-                <input type="text"
-                       id="text"
-                       name="text"
-                       class="form-control"
-                       placeholder="Enter text here">
-            </div>
-            <div class="row">
-                <div class="col-3">
-                    <div class="custom-control custom-radio">
-                        <input type="radio" id="level-low" name="level" value="L" class="custom-control-input">
-                        <label for="level-low" class="custom-control-label">Low</label>
+    <div id="app">
+        <div class="row">
+            <div class="col-6">
+                <text-input v-model="text"></text-input>
+
+                <div class="row">
+                    <div class="col-3">
+                        <radio id="level-low" label="Low"
+                               :self_value="correctLevel.L"
+                               v-model="mode"></radio>
                     </div>
-                </div>
-                <div class="col-3">
-                    <div class="custom-control custom-radio">
-                        <input type="radio" id="level-medium" name="level" value="M" class="custom-control-input">
-                        <label for="level-medium" class="custom-control-label">Medium</label>
+                    <div class="col-3">
+                        <radio id="level-medium" label="Medium"
+                               :self_value="correctLevel.M"
+                               v-model="mode"></radio>
                     </div>
-                </div>
-                <div class="col-3">
-                    <div class="custom-control custom-radio">
-                        <input type="radio" id="level-quartile" name="level" value="Q" class="custom-control-input">
-                        <label for="level-quartile" class="custom-control-label">Quartile</label>
+                    <div class="col-3">
+                        <radio id="level-quartile" label="Quartile"
+                               :self_value="correctLevel.Q"
+                               v-model="mode"></radio>
                     </div>
-                </div>
-                <div class="col-3">
-                    <div class="custom-control custom-radio">
-                        <input type="radio" id="level-high" name="level" value="H" class="custom-control-input" checked>
-                        <label for="level-high" class="custom-control-label">High</label>
+                    <div class="col-3">
+                        <radio id="level-high" label="High"
+                               :self_value="correctLevel.H"
+                               v-model="mode"></radio>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="col-6">
-            <div id="qr"></div>
+            <div class="col-6" id="qr">
+
+            </div>
         </div>
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/gh/jquery/jquery@3.1.0/dist/jquery.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <script>
+    const TextInput = {
+        template: `
+            <div class="form-group">
+                <label for="text" class="sr-only">Text to encode</label>
+                <input type="text" id="text" class="form-control"
+                       placeholder="Enter text here"
+                       :value="value"
+                       @input="$emit('input', $event.target.value)">
+            </div>
+        `,
+        props: ['value'],
+    };
 
-    $(() => {
-        let qrCode = null;
+    const Radio = {
+        template: `
+            <div class="custom-control custom-radio">
+                <input type="radio" class="custom-control-input"
+                       :id="id"
+                       :value="self_value"
+                       :checked="value == self_value"
+                       @change="$emit('input', $event.target.value)">
+                <label :for="id" class="custom-control-label">{{label}}</label>
+            </div>
+        `,
+        props: ['id', 'self_value', 'value', 'label'],
+    };
 
-        function updateCode() {
-            $('#qr').empty();
+    new Vue({
+        el: '#app',
+        data() {
+            return {
+                text: '',
+                mode: QRCode.CorrectLevel.H,
+                correctLevel: QRCode.CorrectLevel,
+            };
+        },
+        components: {
+            Radio,
+            TextInput,
+        },
+        watch: {
+            text() {
+                this.qr();
+            },
+            mode() {
+                this.qr();
+            },
+        },
+        methods: {
+            qr() {
+                const element = document.getElementById("qr");
 
-            let level = $('input[name="level"]:checked').val();
-            let levelValue;
-            switch (level) {
-                case 'L': levelValue = QRCode.CorrectLevel.L; break;
-                case 'M': levelValue = QRCode.CorrectLevel.M; break;
-                case 'Q': levelValue = QRCode.CorrectLevel.Q; break;
-                case 'H': levelValue = QRCode.CorrectLevel.H; break;
-                default:
-                    levelValue = QRCode.CorrectLevel.H;
-            }
+                element.innerHTML = '';
 
-            qrCode = new QRCode(document.getElementById("qr"), {
-                text: $('input[name="text"]').val(),
-                width: 256,
-                height: 256,
-                colorDark : "#000000",
-                colorLight : "#ffffff",
-                correctLevel : levelValue,
-            });
-        }
-
-        $('input[name="text"]').keyup(updateCode);
-        $('input[name="level"]').change(updateCode);
-
-        updateCode();
+                new QRCode(element, {
+                    text: this.text,
+                    width: 256,
+                    height: 256,
+                    colorDark : "#000000",
+                    colorLight : "#ffffff",
+                    correctLevel : parseInt(this.mode),
+                });
+            },
+        },
     });
-
 </script>
+
 </body>
 </html>
