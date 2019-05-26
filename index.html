@@ -1,12 +1,16 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+          crossorigin="anonymous">
     <style>
         #qr img {
-            margin: 50px auto 0;
+            margin: 0 auto 0;
+            padding: 25px;
+            border: 1px solid #555;
         }
     </style>
 
@@ -15,39 +19,52 @@
 <body>
 
 <div class="container">
-    <div class="page-header">
+    <div>
         <h1>QR Code Generator</h1>
+        <hr>
     </div>
-
-    <input type="text"
-           name="text"
-           class="form-control"
-           placeholder="Enter text here">
 
     <div class="row">
-        <div class="col-xs-3">
-            <label>
-                <input type="radio" name="level" value="L"> Low
-            </label>
+        <div class="col-6">
+            <div class="form-group">
+                <label for="text" class="sr-only">Test to encode</label>
+                <input type="text"
+                       id="text"
+                       name="text"
+                       class="form-control"
+                       placeholder="Enter text here">
+            </div>
+            <div class="row">
+                <div class="col-3">
+                    <div class="custom-control custom-radio">
+                        <input type="radio" id="level-low" name="level" value="L" class="custom-control-input">
+                        <label for="level-low" class="custom-control-label">Low</label>
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div class="custom-control custom-radio">
+                        <input type="radio" id="level-medium" name="level" value="M" class="custom-control-input">
+                        <label for="level-medium" class="custom-control-label">Medium</label>
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div class="custom-control custom-radio">
+                        <input type="radio" id="level-quartile" name="level" value="Q" class="custom-control-input">
+                        <label for="level-quartile" class="custom-control-label">Quartile</label>
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div class="custom-control custom-radio">
+                        <input type="radio" id="level-high" name="level" value="H" class="custom-control-input" checked>
+                        <label for="level-high" class="custom-control-label">High</label>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="col-xs-3">
-            <label>
-                <input type="radio" name="level" value="M"> Medium
-            </label>
-        </div>
-        <div class="col-xs-3">
-            <label>
-                <input type="radio" name="level" value="Q"> Quartile
-            </label>
-        </div>
-        <div class="col-xs-3">
-            <label>
-                <input type="radio" name="level" value="H" checked="checked"> High
-            </label>
+        <div class="col-6">
+            <div id="qr"></div>
         </div>
     </div>
-
-    <div id="qr"></div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/gh/jquery/jquery@3.1.0/dist/jquery.min.js"></script>
@@ -83,6 +100,8 @@
 
         $('input[name="text"]').keyup(updateCode);
         $('input[name="level"]').change(updateCode);
+
+        updateCode();
     });
 
 </script>
