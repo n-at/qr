@@ -108,24 +108,37 @@
                 this.qr();
             },
             mode() {
+                this.removeQr();
                 this.qr();
             },
         },
         methods: {
             qr() {
+                if (!this.qrCode) {
+                    const element = document.getElementById("qr");
+
+                    this.qrCode = new QRCode(element, {
+                        text: this.text,
+                        width: 256,
+                        height: 256,
+                        colorDark : "#000000",
+                        colorLight : "#ffffff",
+                        correctLevel : parseInt(this.mode),
+                    });
+                } else {
+                    if (this.text === "") {
+                        this.removeQr();
+                    } else {
+                        this.qrCode.makeCode(this.text);
+                    }
+                }
+            },
+            removeQr() {
                 const element = document.getElementById("qr");
 
-                element.innerHTML = '';
-
-                new QRCode(element, {
-                    text: this.text,
-                    width: 256,
-                    height: 256,
-                    colorDark : "#000000",
-                    colorLight : "#ffffff",
-                    correctLevel : parseInt(this.mode),
-                });
-            },
+                element.innerHTML = "";
+                delete this.qrCode;
+            }
         },
     });
 </script>
